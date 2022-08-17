@@ -3,6 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/gradient_grey.xml" value="0.25" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/gradient_grey_statusbar.xml" value="0.21" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/ic_music.xml" value="0.273" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/ic_player_next.xml" value="0.273" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/ic_player_pause.xml" value="0.273" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/ic_player_play.xml" value="0.273" />
+        <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/ic_player_prev.xml" value="0.273" />
         <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/seek_progressdraw.xml" value="0.273" />
         <entry key="..\:/Projects/AudioPlayer/app/src/main/res/drawable/thumb.xml" value="0.273" />
         <entry key="..\:/Projects/AudioPlayer/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
