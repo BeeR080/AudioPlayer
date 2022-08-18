@@ -15,6 +15,7 @@
     android:layout_width="match_parent"
     android:layout_height="380dp"
     android:gravity="center"
+    android:orientation="vertical"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +28,17 @@
         android:layout_gravity="center"
         android:src="@color/cardview_shadow_start_color"
         android:foreground="@drawable/ic_music"
-        android:foregroundGravity="center"/>
+        android:foregroundGravity="center"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:textSize="24dp"
+        android:text="Skillet - Hero"
+        android:textColor="@color/white" />
 
 
 </LinearLayout>
@@ -45,7 +56,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/player_currentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:18"
+                android:textColor="@color/white"
+                />
 
             <SeekBar
                 android:id="@+id/audio_seekbar"
@@ -55,6 +75,13 @@
                 android:progressBackgroundTint="@color/white"
                 android:thumb="@drawable/thumb"
                 android:progressTint="@color/yellow"
+                />
+            <TextView
+                android:id="@+id/player_maxTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2:03"
+                android:textColor="@color/white"
                 />
 
 

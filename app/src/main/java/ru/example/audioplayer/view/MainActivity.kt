@@ -1,13 +1,18 @@
 package ru.example.audioplayer.view
 
+import android.app.Notification
+import android.app.NotificationManager
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.app.NotificationCompat
 import ru.example.audioplayer.R
 import ru.example.audioplayer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +21,14 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment,AudioListFragment())
+            .replace(R.id.fragment, AudioListFragment())
             .commit()
+
+
+        binding.button.setOnClickListener {
+
+        }
+
+
     }
 }

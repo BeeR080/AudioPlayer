@@ -1,18 +1,24 @@
 package ru.example.audioplayer.view
 
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.example.audioplayer.R
 import ru.example.audioplayer.databinding.FragmentAudioListBinding
+import ru.example.audioplayer.utils.formatTime
 
 
 class AudioListFragment : Fragment() {
@@ -21,14 +27,18 @@ class AudioListFragment : Fragment() {
     private lateinit var audioPlayer : MediaPlayer
     private var currentMusic = mutableListOf(R.raw.skillet_herro)
 
+
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        audioPlayer = MediaPlayer.create(requireContext(), currentMusic[0])
+    ): View {
         binding = FragmentAudioListBinding.inflate(layoutInflater)
-
+        audioPlayer = MediaPlayer.create(requireContext(), currentMusic[0])
         controlAudioPlayer()
+
         binding.audioSeekbar.apply {
             max = audioPlayer.duration
             progress = 0
@@ -42,11 +52,16 @@ class AudioListFragment : Fragment() {
 
 
     fun controlAudioPlayer(){
+
         binding.playerPlay.apply{
             setOnClickListener {
                 if(!audioPlayer.isPlaying){
                    audioPlayer.start()
+                    val musicDuration = audioPlayer.duration
+                    binding.playerMaxTime.setText(formatTime(musicDuration))
                     setBackgroundResource(R.drawable.ic_player_pause)
+                    showMusicNotification()
+
 
             }else{
                 audioPlayer.pause()
@@ -87,9 +102,43 @@ class AudioListFragment : Fragment() {
 
 
 
+
     }
 
 
+
+
+    fun showMusicNotification(){
+        val notificationManager =
+            requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationChannel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            )
+                notificationManager.createNotificationChannel(notificationChannel)
+        }
+        val notification = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+            .setContentTitle("Skillet")
+            .setContentText("Hero")
+            .setSmallIcon(R.drawable.ic_music)
+            .build()
+        notificationManager.notify(1,notification)
+
+    }
+
+
+
+
+
+
+
+    companion object{
+        private const val CHANNEL_ID = "channel_id"
+        private const val CHANNEL_NAME = "MusicChannel"
+    }
 
 
 
