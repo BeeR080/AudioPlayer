@@ -25,10 +25,6 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
 
-        binding.button.setOnClickListener {
-
-        }
-
 
     }
 }

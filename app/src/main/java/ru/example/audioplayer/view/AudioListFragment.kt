@@ -4,9 +4,11 @@ package ru.example.audioplayer.view
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.icu.util.TimeUnit
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +21,18 @@ import kotlinx.coroutines.launch
 import ru.example.audioplayer.R
 import ru.example.audioplayer.databinding.FragmentAudioListBinding
 import ru.example.audioplayer.utils.formatTime
+import kotlin.concurrent.thread
 
 
 class AudioListFragment : Fragment() {
 
     private lateinit var binding : FragmentAudioListBinding
     private lateinit var audioPlayer : MediaPlayer
-    private var currentMusic = mutableListOf(R.raw.skillet_herro)
+    private var currentMusic = mutableListOf(
+        R.raw.skillet_herro,
+        R.raw.dead_blonde_malchik_na_devyatke
+    )
+    private var currentTrack = 0
 
 
 
@@ -36,8 +43,9 @@ class AudioListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAudioListBinding.inflate(layoutInflater)
-        audioPlayer = MediaPlayer.create(requireContext(), currentMusic[0])
+
         controlAudioPlayer()
+        controlButtonsPrevandNext()
 
         binding.audioSeekbar.apply {
             max = audioPlayer.duration
@@ -52,11 +60,13 @@ class AudioListFragment : Fragment() {
 
 
     fun controlAudioPlayer(){
-
+        audioPlayer = MediaPlayer.create(requireContext(),
+            currentMusic[currentTrack])
         binding.playerPlay.apply{
             setOnClickListener {
                 if(!audioPlayer.isPlaying){
                    audioPlayer.start()
+                    binding.playerMusicName.setText(currentMusic.toString())
                     val musicDuration = audioPlayer.duration
                     binding.playerMaxTime.setText(formatTime(musicDuration))
                     setBackgroundResource(R.drawable.ic_player_pause)
@@ -86,7 +96,9 @@ class AudioListFragment : Fragment() {
 
             })
             lifecycleScope.launch {
+
                  while (true) {
+                     binding.playerCurrentTime.setText(formatTime(audioPlayer.currentPosition))
                      binding.audioSeekbar.progress = audioPlayer.currentPosition
                      delay(100)
 
@@ -130,14 +142,28 @@ class AudioListFragment : Fragment() {
     }
 
 
-
-
-
-
-
     companion object{
         private const val CHANNEL_ID = "channel_id"
         private const val CHANNEL_NAME = "MusicChannel"
+    }
+
+    fun controlButtonsPrevandNext(){
+
+        binding.playerPrev.setOnClickListener {
+            audioPlayer.stop()
+            currentTrack--
+            controlAudioPlayer()
+            Log.d("music", "$currentTrack")
+
+        }
+        binding.playerNext.setOnClickListener {
+            audioPlayer.stop()
+            currentTrack++
+            controlAudioPlayer()
+            Log.d("music", "$currentTrack")
+
+
+        }
     }
 
 
