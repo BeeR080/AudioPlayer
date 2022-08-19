@@ -127,10 +127,12 @@
         style="?attr/bottomSheetStyle"
         android:elevation="8dp"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="160dp"
+        app:behavior_peekHeight="20dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         android:layout_gravity="end"
         android:background="@drawable/bg_bottomsheets"
+        android:backgroundTint="@color/cardview_shadow_start_color"
+
         >
 
         <LinearLayout
@@ -140,6 +142,26 @@
             android:elevation="16dp"
             android:orientation="vertical"
             >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_bottomsheets_swiper"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_gravity="center"
+
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/player_recycler_musiclist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                android:layout_marginBottom="8dp"
+                tools:layout_height="160dp"
+                />
+
 
 
         </LinearLayout>

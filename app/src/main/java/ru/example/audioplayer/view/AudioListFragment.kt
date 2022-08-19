@@ -16,9 +16,13 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.example.audioplayer.R
+import ru.example.audioplayer.adapter.AdapterListMusicBottomSheet
+import ru.example.audioplayer.data.MusicList
 import ru.example.audioplayer.databinding.FragmentAudioListBinding
 import ru.example.audioplayer.utils.formatTime
 import kotlin.concurrent.thread
@@ -33,9 +37,11 @@ class AudioListFragment : Fragment() {
         R.raw.dead_blonde_malchik_na_devyatke
     )
     private var currentTrack = 0
-
-
-
+    val adapter = AdapterListMusicBottomSheet()
+    private var testList:List<MusicList> = listOf(
+        MusicList("Skillet","Hero"),
+        MusicList("DjAbra","SuperReutov"),
+        MusicList("Arctic Monkeys","Jalulambab"))
 
 
     override fun onCreateView(
@@ -47,15 +53,26 @@ class AudioListFragment : Fragment() {
         controlAudioPlayer()
         controlButtonsPrevandNext()
 
+
+
         binding.audioSeekbar.apply {
             max = audioPlayer.duration
             progress = 0
 
         }
 
+        //Music List Adapter
+        val rvListMusicBsh = binding.playerRecyclerMusiclist
+        rvListMusicBsh.adapter = adapter
+        rvListMusicBsh.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter.setData(testList)
+
 
         return binding.root
     }
+
+
 
 
 
