@@ -10,8 +10,8 @@
         <item name="colorSecondaryVariant">@color/grey</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/status_bar</item>
-        <item name="toolbarStyle">@drawable/gradient_grey_statusbar</item>
+        <item name="android:statusBarColor" tools:targetApi="l">#F57C00</item>
+
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <!-- Customize your theme here. -->

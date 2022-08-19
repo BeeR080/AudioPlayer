@@ -59,6 +59,7 @@ class AudioListFragment : Fragment() {
 
 
 
+
     fun controlAudioPlayer(){
         audioPlayer = MediaPlayer.create(requireContext(),
             currentMusic[currentTrack])
@@ -140,19 +141,18 @@ class AudioListFragment : Fragment() {
         notificationManager.notify(1,notification)
 
     }
-
-
-    companion object{
-        private const val CHANNEL_ID = "channel_id"
-        private const val CHANNEL_NAME = "MusicChannel"
-    }
-
     fun controlButtonsPrevandNext(){
-
+        audioPlayer = MediaPlayer.create(requireContext(),
+            currentMusic[currentTrack])
         binding.playerPrev.setOnClickListener {
             audioPlayer.stop()
             currentTrack--
             controlAudioPlayer()
+            binding.playerMusicName.setText(currentMusic.toString())
+            val musicDuration = audioPlayer.duration
+            binding.playerMaxTime.setText(formatTime(musicDuration))
+            binding.playerPlay.setBackgroundResource(R.drawable.ic_player_pause)
+            audioPlayer.start()
             Log.d("music", "$currentTrack")
 
         }
@@ -160,11 +160,25 @@ class AudioListFragment : Fragment() {
             audioPlayer.stop()
             currentTrack++
             controlAudioPlayer()
+            val musicDuration = audioPlayer.duration
+            binding.playerMaxTime.setText(formatTime(musicDuration))
+            binding.playerPlay.setBackgroundResource(R.drawable.ic_player_pause)
+            audioPlayer.start()
             Log.d("music", "$currentTrack")
 
 
         }
     }
+
+
+
+
+    companion object{
+        private const val CHANNEL_ID = "channel_id"
+        private const val CHANNEL_NAME = "MusicChannel"
+    }
+
+
 
 
 
