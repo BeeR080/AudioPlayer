@@ -1,10 +1,13 @@
 package ru.example.audioplayer.view
 
 
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
-import android.icu.util.TimeUnit
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -15,17 +18,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.example.audioplayer.R
 import ru.example.audioplayer.adapter.AdapterListMusicBottomSheet
 import ru.example.audioplayer.data.MusicList
+import ru.example.audioplayer.data.MusicViewModel
 import ru.example.audioplayer.databinding.FragmentAudioListBinding
+import ru.example.audioplayer.service.AudioService
 import ru.example.audioplayer.utils.formatTime
-import kotlin.concurrent.thread
+
 
 
 class AudioListFragment : Fragment() {
@@ -36,12 +43,17 @@ class AudioListFragment : Fragment() {
         R.raw.skillet_herro,
         R.raw.dead_blonde_malchik_na_devyatke
     )
+    lateinit var vmMusic: MusicViewModel
+    private var recieverMusic = AudioService()
     private var currentTrack = 0
     val adapter = AdapterListMusicBottomSheet()
-    private var testList:List<MusicList> = listOf(
-        MusicList("Skillet","Hero"),
-        MusicList("DjAbra","SuperReutov"),
-        MusicList("Arctic Monkeys","Jalulambab"))
+
+
+    private var testToDb:MusicList =
+        MusicList(1,"Skillet","Hero")
+
+
+
 
 
     override fun onCreateView(
@@ -49,6 +61,11 @@ class AudioListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAudioListBinding.inflate(layoutInflater)
+        vmMusic = ViewModelProvider(this).get(MusicViewModel::class.java)
+        vmMusic.getAllMusic.observe(viewLifecycleOwner, Observer{music->
+            adapter.setData(music)
+        })
+        vmMusic.addMusic(testToDb)
 
         controlAudioPlayer()
         controlButtonsPrevandNext()
@@ -66,13 +83,13 @@ class AudioListFragment : Fragment() {
         rvListMusicBsh.adapter = adapter
         rvListMusicBsh.layoutManager = LinearLayoutManager(requireContext())
 
-        adapter.setData(testList)
+
+
 
 
         return binding.root
+
     }
-
-
 
 
 
@@ -139,8 +156,18 @@ class AudioListFragment : Fragment() {
 
 
     fun showMusicNotification(){
+        val intentNext = Intent(requireContext(),AudioListFragment::class.java)
+            .setAction(ACTION_NEXT)
+        val pendingIntentNext = PendingIntent.getBroadcast(
+            requireContext(),
+            0,
+            intentNext,
+            PendingIntent.FLAG_UPDATE_CURRENT)
+        val intentFilter = IntentFilter("TRACKS")
+        activity?.registerReceiver(recieverMusic,intentFilter)
         val notificationManager =
-            requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            requireActivity()
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val notificationChannel = NotificationChannel(
@@ -153,11 +180,21 @@ class AudioListFragment : Fragment() {
         val notification = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
             .setContentTitle("Skillet")
             .setContentText("Hero")
+            .addAction(R.drawable.ic_player_prev,"Prev",pendingIntentNext)
+            .addAction(R.drawable.ic_player_pause,"Play",pendingIntentNext)
+            .addAction(R.drawable.ic_player_next,"Next",pendingIntentNext)
+            .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(0, 1, 2))
             .setSmallIcon(R.drawable.ic_music)
             .build()
+
         notificationManager.notify(1,notification)
 
     }
+
+
+
+
     fun controlButtonsPrevandNext(){
         audioPlayer = MediaPlayer.create(requireContext(),
             currentMusic[currentTrack])
@@ -188,11 +225,16 @@ class AudioListFragment : Fragment() {
     }
 
 
-
-
     companion object{
+
+        private const val ACTION_NEXT = "actionnext"
         private const val CHANNEL_ID = "channel_id"
         private const val CHANNEL_NAME = "MusicChannel"
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        activity?.unregisterReceiver(recieverMusic)
     }
 
 

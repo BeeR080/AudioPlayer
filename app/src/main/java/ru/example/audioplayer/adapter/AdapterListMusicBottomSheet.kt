@@ -44,12 +44,12 @@ class AdapterListMusicBottomSheet:
 
     override fun getItemCount(): Int {
         return musicList.size
-        notifyDataSetChanged()
+
     }
 
     fun setData(listMusic: List<MusicList>){
         musicList = listMusic
-
+        notifyDataSetChanged()
     }
 
 

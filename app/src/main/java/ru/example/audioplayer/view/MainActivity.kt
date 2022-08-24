@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import ru.example.audioplayer.R
 import ru.example.audioplayer.databinding.ActivityMainBinding
+import ru.example.audioplayer.service.AudioService
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(R.id.fragment, AudioListFragment())
             .commit()
-
 
 
     }

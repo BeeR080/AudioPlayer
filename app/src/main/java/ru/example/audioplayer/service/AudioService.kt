@@ -1,12 +1,19 @@
 package ru.example.audioplayer.service
 
-import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
-import android.os.IBinder
+import ru.example.audioplayer.databinding.FragmentAudioListBinding
+import ru.example.audioplayer.view.AudioListFragment
 
-class AudioService : Service() {
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
+class AudioService : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        context!!.sendBroadcast(Intent("TRACKS")
+            .putExtra("TRACKS",intent!!.action))
+
+
     }
+
+
 }
