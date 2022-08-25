@@ -96,7 +96,8 @@
                 android:id="@+id/player_prev"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:foreground="@drawable/ic_player_prev"
+                android:background="@drawable/ic_player_prev"
+
 
                 />
 
@@ -113,7 +114,9 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="22dp"
-                android:foreground="@drawable/ic_player_next" />
+                android:background="@drawable/ic_player_next"
+
+                />
 
 
         </LinearLayout>
@@ -131,7 +134,7 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         android:layout_gravity="end"
         android:background="@drawable/bg_bottomsheets"
-        android:backgroundTint="@color/cardview_shadow_start_color"
+        android:backgroundTint="@color/black"
 
         >
 
