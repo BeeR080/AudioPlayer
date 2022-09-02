@@ -9,15 +9,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -38,22 +44,22 @@ import ru.example.audioplayer.utils.formatTime
 class AudioListFragment : Fragment() {
 
     private lateinit var binding : FragmentAudioListBinding
-    private lateinit var audioPlayer : MediaPlayer
+    lateinit var vmMusic: MusicViewModel
+    private lateinit var audioPlayer: MediaPlayer
+
     private var currentMusic = mutableListOf(
         R.raw.skillet_herro,
-        R.raw.dead_blonde_malchik_na_devyatke
+        R.raw.dead_blonde_malchik_na_devyatke,
     )
-    lateinit var vmMusic: MusicViewModel
+
+
     private var recieverMusic = AudioService()
     private var currentTrack = 0
-    val adapter = AdapterListMusicBottomSheet()
 
-
-    private var testToDb:MusicList =
-        MusicList(1,"Skillet","Hero")
-
-
-
+    private var getContent =registerForActivityResult(ActivityResultContracts.GetContent()){uri: Uri?->
+        vmMusic.addMusic(MusicList(10,uri.toString(),"TestMusic2123"))
+    }
+    private val adapter = AdapterListMusicBottomSheet()
 
 
     override fun onCreateView(
@@ -65,11 +71,11 @@ class AudioListFragment : Fragment() {
         vmMusic.getAllMusic.observe(viewLifecycleOwner, Observer{music->
             adapter.setData(music)
         })
-        vmMusic.addMusic(testToDb)
+         audioPlayer = MediaPlayer()
 
         controlAudioPlayer()
-        controlButtonsPrevandNext()
-
+        //controlButtonsPrevandNext()
+        addMusic()
 
 
         binding.audioSeekbar.apply {
@@ -90,13 +96,26 @@ class AudioListFragment : Fragment() {
         return binding.root
 
     }
+    fun selectMusic(){
+        getContent.launch(TYPE_MUSIC)
+    }
+
+    fun addMusic(){
+        binding.playerAddMusic.setOnClickListener {
+            selectMusic()
+        }
+    }
 
 
 
 
     fun controlAudioPlayer(){
+       val musicUri = Uri.parse(" content://com.android.providers.downloads.documents/document/msf%3A25")
+         audioPlayer.setDataSource(requireContext(),musicUri)
+
         audioPlayer = MediaPlayer.create(requireContext(),
-            currentMusic[currentTrack])
+           musicUri!!)
+
         binding.playerPlay.apply{
             setOnClickListener {
                 if(!audioPlayer.isPlaying){
@@ -196,8 +215,8 @@ class AudioListFragment : Fragment() {
 
 
     fun controlButtonsPrevandNext(){
-        audioPlayer = MediaPlayer.create(requireContext(),
-            currentMusic[currentTrack])
+       /* audioPlayer = MediaPlayer.create(requireContext(),
+            currentMusic[currentTrack])*/
         binding.playerPrev.setOnClickListener {
             audioPlayer.stop()
             currentTrack--
@@ -230,6 +249,7 @@ class AudioListFragment : Fragment() {
         private const val ACTION_NEXT = "actionnext"
         private const val CHANNEL_ID = "channel_id"
         private const val CHANNEL_NAME = "MusicChannel"
+        private const val TYPE_MUSIC = "audio/*"
     }
 
     override fun onDestroyView() {
