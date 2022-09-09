@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
@@ -37,8 +38,7 @@ import ru.example.audioplayer.data.MusicList
 import ru.example.audioplayer.data.MusicViewModel
 import ru.example.audioplayer.databinding.FragmentAudioListBinding
 import ru.example.audioplayer.service.AudioService
-import ru.example.audioplayer.utils.formatTime
-
+import ru.example.audioplayer.utils.*
 
 
 class AudioListFragment : Fragment() {
@@ -52,12 +52,14 @@ class AudioListFragment : Fragment() {
         R.raw.dead_blonde_malchik_na_devyatke,
     )
 
-
     private var recieverMusic = AudioService()
     private var currentTrack = 0
 
-    private var getContent =registerForActivityResult(ActivityResultContracts.GetContent()){uri: Uri?->
-        vmMusic.addMusic(MusicList(10,uri.toString(),"TestMusic2123"))
+    private var getContent =registerForActivityResult(ActivityResultContracts.OpenDocument()){uri: Uri?->
+       val artistName = getArtistNameFromUri(requireActivity(),uri!!)
+       val artistTrack = getArtistMusicTitleFromUri(requireContext(),uri!!)
+        vmMusic.addMusic(MusicList(7,uri.toString(),artistName,artistTrack))
+
     }
     private val adapter = AdapterListMusicBottomSheet()
 
@@ -72,8 +74,7 @@ class AudioListFragment : Fragment() {
             adapter.setData(music)
         })
          audioPlayer = MediaPlayer()
-
-        controlAudioPlayer()
+         controlAudioPlayer()
         //controlButtonsPrevandNext()
         addMusic()
 
@@ -110,24 +111,27 @@ class AudioListFragment : Fragment() {
 
 
     fun controlAudioPlayer(){
-       val musicUri = Uri.parse(" content://com.android.providers.downloads.documents/document/msf%3A25")
-         audioPlayer.setDataSource(requireContext(),musicUri)
+      // val musicUri = "https://cdn.drivemusic.me/dl/online/cidDfC8YxHXbVizL0tua3A/1662769341/download_music/2014/04/britney-spears-baby-one-more-time.mp3"
+         val musicUri = "content://com.android.providers.downloads.documents/document/msf%3A26"
 
-        audioPlayer = MediaPlayer.create(requireContext(),
-           musicUri!!)
+      audioPlayer.setDataSource(requireActivity().applicationContext,musicUri.toUri())
+        audioPlayer.prepare()
+
+
+        /*audioPlayer = MediaPlayer.create(requireContext(),
+           musicUri)*/
 
         binding.playerPlay.apply{
             setOnClickListener {
-                if(!audioPlayer.isPlaying){
-                   audioPlayer.start()
+                if(!audioPlayer.isPlaying) {
+                    audioPlayer.start()
                     binding.playerMusicName.setText(currentMusic.toString())
                     val musicDuration = audioPlayer.duration
                     binding.playerMaxTime.setText(formatTime(musicDuration))
                     setBackgroundResource(R.drawable.ic_player_pause)
                     showMusicNotification()
 
-
-            }else{
+                 }else{
                 audioPlayer.pause()
                 setBackgroundResource(R.drawable.ic_player_play)
             }
@@ -215,12 +219,12 @@ class AudioListFragment : Fragment() {
 
 
     fun controlButtonsPrevandNext(){
-       /* audioPlayer = MediaPlayer.create(requireContext(),
-            currentMusic[currentTrack])*/
+       audioPlayer = MediaPlayer.create(requireContext(),
+            currentMusic[currentTrack])
         binding.playerPrev.setOnClickListener {
             audioPlayer.stop()
             currentTrack--
-            controlAudioPlayer()
+           // controlAudioPlayer()
             binding.playerMusicName.setText(currentMusic.toString())
             val musicDuration = audioPlayer.duration
             binding.playerMaxTime.setText(formatTime(musicDuration))
@@ -249,7 +253,7 @@ class AudioListFragment : Fragment() {
         private const val ACTION_NEXT = "actionnext"
         private const val CHANNEL_ID = "channel_id"
         private const val CHANNEL_NAME = "MusicChannel"
-        private const val TYPE_MUSIC = "audio/*"
+        private  val TYPE_MUSIC = arrayOf("audio/*")
     }
 
     override fun onDestroyView() {
