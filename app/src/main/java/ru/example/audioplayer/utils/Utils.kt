@@ -1,12 +1,13 @@
 package ru.example.audioplayer.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import java.util.concurrent.TimeUnit
-import java.util.logging.SimpleFormatter
+
+
 
 fun formatTime(millsec:Int): String{
     val minutes = millsec / 1000 / 60
@@ -14,23 +15,28 @@ fun formatTime(millsec:Int): String{
     var time = String.format("%02d:%02d", minutes, seconds)
 
     return time
-
 }
 
+
+
+
+@SuppressLint("Range")
 fun getArtistNameFromUri(context: Context, uri: Uri): String{
+
     val metadata = arrayOf(
-        MediaStore.Audio.Media.ARTIST,
-        MediaStore.Audio.Media.TITLE
+        MediaStore.Audio.Media.ARTIST
     )
- var artistName: String= "Lupa "
-    val cursor:Cursor? = context.contentResolver.query(uri,
+ var artistName: String= "Lupa"
+    val cursor:Cursor? = context.applicationContext.contentResolver.query(
+        uri,
         metadata,
-        null,
+         null,
         null,
         null)
 
     if (cursor!=null && cursor.moveToFirst()){
-        artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
+        cursor.moveToFirst()
+        artistName = cursor.getString(cursor.getColumnIndex("artist"))
 
     }
     if (cursor!=null){
@@ -40,20 +46,24 @@ fun getArtistNameFromUri(context: Context, uri: Uri): String{
 }
 
 
+
+@SuppressLint("Range")
 fun getArtistMusicTitleFromUri(context: Context, uri: Uri): String{
+    val activity = Activity()
     val metadata = arrayOf(
-        MediaStore.Audio.Media.ARTIST,
         MediaStore.Audio.Media.TITLE
     )
-    var artistAlbum: String=" Pupin"
-    val cursor:Cursor? = context.contentResolver.query(uri,
+    var artistAlbum: String= "Pupin"
+    val cursor:Cursor? = context.applicationContext.contentResolver!!.query(
+        uri,
         metadata,
         null,
         null,
         null)
 
     if (cursor!=null && cursor.moveToFirst()){
-        artistAlbum = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE).toString()
+        cursor.moveToFirst()
+        artistAlbum = cursor.getString(cursor.getColumnIndex("title"))
     }
     if (cursor!=null){
         cursor.close()

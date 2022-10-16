@@ -1,32 +1,25 @@
 package ru.example.audioplayer.view
 
-
-
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,17 +44,18 @@ class AudioListFragment : Fragment() {
         R.raw.skillet_herro,
         R.raw.dead_blonde_malchik_na_devyatke,
     )
-
+    private val adapter = AdapterListMusicBottomSheet()
     private var recieverMusic = AudioService()
     private var currentTrack = 0
+    private var id =adapter.itemCount.toString()
 
     private var getContent =registerForActivityResult(ActivityResultContracts.OpenDocument()){uri: Uri?->
        val artistName = getArtistNameFromUri(requireActivity(),uri!!)
-       val artistTrack = getArtistMusicTitleFromUri(requireContext(),uri!!)
-        vmMusic.addMusic(MusicList(7,uri.toString(),artistName,artistTrack))
+       val artistTrack = getArtistMusicTitleFromUri(requireActivity(),uri!!)
+        vmMusic.addMusic(MusicList(id.toInt(),uri.toString(),artistName,artistTrack))
 
     }
-    private val adapter = AdapterListMusicBottomSheet()
+
 
 
     override fun onCreateView(
@@ -70,7 +64,7 @@ class AudioListFragment : Fragment() {
     ): View {
         binding = FragmentAudioListBinding.inflate(layoutInflater)
         vmMusic = ViewModelProvider(this).get(MusicViewModel::class.java)
-        vmMusic.getAllMusic.observe(viewLifecycleOwner, Observer{music->
+        vmMusic.getAllMusic.observe(viewLifecycleOwner, Observer{ music->
             adapter.setData(music)
         })
          audioPlayer = MediaPlayer()
@@ -90,10 +84,6 @@ class AudioListFragment : Fragment() {
         rvListMusicBsh.adapter = adapter
         rvListMusicBsh.layoutManager = LinearLayoutManager(requireContext())
 
-
-
-
-
         return binding.root
 
     }
@@ -107,12 +97,9 @@ class AudioListFragment : Fragment() {
         }
     }
 
-
-
-
     fun controlAudioPlayer(){
-      // val musicUri = "https://cdn.drivemusic.me/dl/online/cidDfC8YxHXbVizL0tua3A/1662769341/download_music/2014/04/britney-spears-baby-one-more-time.mp3"
-         val musicUri = "content://com.android.providers.downloads.documents/document/msf%3A26"
+       val musicUri = "https://cdn.drivemusic.me/dl/online/cidDfC8YxHXbVizL0tua3A/1662769341/download_music/2014/04/britney-spears-baby-one-more-time.mp3"
+        //val musicUri = "content://com.android.providers.downloads.documents/document/msf%3A26"
 
       audioPlayer.setDataSource(requireActivity().applicationContext,musicUri.toUri())
         audioPlayer.prepare()
@@ -174,8 +161,6 @@ class AudioListFragment : Fragment() {
 
 
     }
-
-
 
 
     fun showMusicNotification(){

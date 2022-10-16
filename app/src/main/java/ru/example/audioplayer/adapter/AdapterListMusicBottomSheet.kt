@@ -21,10 +21,6 @@ class AdapterListMusicBottomSheet:
 
    }
 
-
-
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MusicViewHolder {
         val view = LayoutInflater
             .from(parent.context)
